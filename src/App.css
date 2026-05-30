@@ -1,0 +1,204 @@
+.App {
+  min-height: 100vh;
+  background: #0a0e0a;
+  color: #00ff41;
+  font-family: 'Courier New', monospace;
+}
+
+/* CRT Screen Effect */
+.crt {
+  animation: flicker 0.15s 20, flicker-final 0.15s 3s forwards;
+}
+
+.crt::before {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
+
+.crt::after {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(18, 16, 16, 0.1);
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+  animation: flicker 0.15s 20, flicker-final 0.15s 3s forwards;
+}
+
+/* Scan Lines */
+.scanlines {
+  overflow: hidden;
+  position: relative;
+}
+
+.scanlines::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Text Glow */
+.text-glow {
+  text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41, 0 0 30px #00ff41;
+}
+
+.text-glow-strong {
+  text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41, 0 0 40px #00ff41, 0 0 80px #00ff41;
+}
+
+/* Terminal Box */
+.terminal-box {
+  border: 2px solid #00ff41;
+  background: rgba(0, 255, 65, 0.05);
+  box-shadow: inset 0 0 20px rgba(0, 255, 65, 0.1), 0 0 20px rgba(0, 255, 65, 0.2);
+}
+
+/* Cursor Blink */
+.cursor {
+  display: inline-block;
+  width: 10px;
+  height: 1em;
+  background: #00ff41;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Flicker Effect */
+@keyframes flicker {
+  0% { opacity: 0.27861; }
+  5% { opacity: 0.34769; }
+  10% { opacity: 0.23604; }
+  15% { opacity: 0.90626; }
+  20% { opacity: 0.18128; }
+  25% { opacity: 0.83891; }
+  30% { opacity: 0.65583; }
+  35% { opacity: 0.67807; }
+  40% { opacity: 0.26559; }
+  45% { opacity: 0.84693; }
+  50% { opacity: 0.96019; }
+  55% { opacity: 0.08594; }
+  60% { opacity: 0.20313; }
+  65% { opacity: 0.71988; }
+  70% { opacity: 0.53455; }
+  75% { opacity: 0.37288; }
+  80% { opacity: 0.71428; }
+  85% { opacity: 0.70419; }
+  90% { opacity: 0.7003; }
+  95% { opacity: 0.36108; }
+  100% { opacity: 0.24387; }
+}
+
+@keyframes flicker-final {
+  0% { opacity: 0.24387; }
+  100% { opacity: 1; }
+}
+
+/* Typing Animation */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+.typing {
+  overflow: hidden;
+  border-right: 2px solid #00ff41;
+  white-space: nowrap;
+  animation: typing 2s steps(40, end), blink 0.75s step-end infinite;
+  display: inline-block;
+}
+
+/* ASCII Border */
+.ascii-border {
+  border: 1px solid #00ff41;
+  position: relative;
+}
+
+.ascii-border::before {
+  content: '╔═══════════════════════════════════════╗';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  font-family: monospace;
+  color: #00ff41;
+  font-size: 12px;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0e0a;
+  border-left: 1px solid #00ff41;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00ff41;
+  box-shadow: inset 0 0 6px rgba(0, 255, 65, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00ff41;
+  box-shadow: 0 0 10px #00ff41;
+}
+
+/* Button Hover */
+.terminal-button {
+  border: 2px solid #00ff41;
+  background: transparent;
+  color: #00ff41;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+
+.terminal-button:hover {
+  background: #00ff41;
+  color: #0a0e0a;
+  box-shadow: 0 0 20px #00ff41;
+}
+
+/* Selection */
+::selection {
+  background: #00ff41;
+  color: #0a0e0a;
+}
