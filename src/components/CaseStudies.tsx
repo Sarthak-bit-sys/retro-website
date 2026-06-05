@@ -6,21 +6,32 @@ import { CaseStudy } from '../types';
 import AmbientDotMatrix from './AmbientDotMatrix';
 import { Terminal, X, FileCode2, BarChart3, HelpCircle, Check, Image as ImageIcon } from 'lucide-react';
 import { useStickyOffset } from '../hooks/useStickyOffset';
+import OptimizedImage from './OptimizedImage';
 
-// @ts-expect-error - Vite resolves PNG imports automatically
-import reviseSmarterPng from '../assets/images/case-studies/revise-smarter.png';
-// @ts-expect-error - Vite resolves PNG imports automatically
-import textileTraceabilityPng from '../assets/images/case-studies/textile-traceability.png';
-// @ts-expect-error - Vite resolves PNG imports automatically
-import travelmaticPlatformPng from '../assets/images/case-studies/travelmatic-platform.png';
-// @ts-expect-error - Vite resolves PNG imports automatically
-import yolearnLandingPng from '../assets/images/case-studies/yolearn-landing.png';
+import { useImage } from '../hooks/useImage';
 
-const CASE_STUDY_IMAGES: Record<string, string> = {
-  'revise-smarter': reviseSmarterPng,
-  'textile-traceability': textileTraceabilityPng,
-  'travelmatic-platform': travelmaticPlatformPng,
-  'yolearn-landing': yolearnLandingPng
+interface CaseStudyImageContainerProps {
+  projectId: string;
+  alt: string;
+}
+
+const CaseStudyImageContainer: React.FC<CaseStudyImageContainerProps> = ({ projectId, alt }) => {
+  const imgSrc = useImage(projectId);
+
+  return (
+    <div 
+      className="mb-2.5 rounded border border-[#00ff66]/25 bg-black/40 relative select-none screenshot-container uploaded overflow-hidden cursor-default group transition-all duration-350 min-h-[190px] w-full flex items-center justify-center animate-fadeIn"
+    >
+      {imgSrc && (
+        <OptimizedImage
+          src={imgSrc}
+          alt={alt}
+          className="pointer-events-none select-none w-full h-full object-contain object-center p-1.5 mx-auto transition-transform duration-500 group-hover:scale-[1.01]"
+          wrapperClassName="w-full h-full"
+        />
+      )}
+    </div>
+  );
 };
 
 const CASE_STUDY_LINKS: Record<string, string> = {
@@ -63,9 +74,7 @@ const CaseStudies = React.memo(function CaseStudies() {
       id="casestudies"
       ref={elementRef}
       style={{ 
-        top: stickyTop,
-        contain: 'paint layout',
-        willChange: 'transform'
+        top: stickyTop
       }}
       className="relative md:sticky z-[40] w-full min-h-screen flex flex-col justify-center py-16 md:py-24 bg-[#051105] border-t border-[#00ff66]/40 scroll-mt-20 overflow-hidden"
     >
@@ -98,12 +107,10 @@ const CaseStudies = React.memo(function CaseStudies() {
         {/* 2x2 Clean Case Studies Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 font-mono text-xs text-left">
           {CASE_STUDIES.map((project, idx) => {
-            const staticScreenshot = CASE_STUDY_IMAGES[project.id];
-
             return (
               <div
                 key={project.id}
-                className="bg-black border border-[#00ff66]/30 hover:border-[#00ff66] rounded flex flex-col justify-start p-4 sm:p-5 transition-all duration-300 retro-border relative group h-full z-10 will-change-gpu"
+                className="bg-black border border-[#00ff66]/30 hover:border-[#00ff66] rounded flex flex-col justify-start p-4 sm:p-5 transition-all duration-300 retro-border relative group h-full z-10"
               >
                 {/* 1. Case Study Title */}
                 <div className="min-h-[72px] sm:min-h-[108px] flex items-start mb-2">
@@ -112,28 +119,11 @@ const CaseStudies = React.memo(function CaseStudies() {
                   </h3>
                 </div>
 
-                {/* 3. Product Screenshot - Static Local File only */}
-                <div className="mb-2.5 rounded border border-[#00ff66]/25 bg-black relative select-none screenshot-container uploaded overflow-hidden min-h-[180px] flex items-center justify-center">
-                  <img 
-                    src={staticScreenshot} 
-                    alt={`${project.title} Screenshot`} 
-                    className="pointer-events-none select-none w-full h-full object-contain object-center p-1.5 mx-auto transition-transform duration-500 group-hover:scale-[1.02]"
-                    loading="lazy"
-                    decoding="async"
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      target.style.display = 'none';
-                      const parent = target.parentElement;
-                      if (parent && !parent.querySelector('.img-fallback')) {
-                        const fallback = document.createElement('div');
-                        fallback.className = 'img-fallback';
-                        fallback.style.cssText = 'width:100%;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:#051105;color:rgba(0,255,102,0.35);font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:24px;';
-                        fallback.innerHTML = '<div style="font-size:22px;opacity:0.5">⬛</div><div>[ NO_SIGNAL ]</div><div style="font-size:9px;opacity:0.5;margin-top:4px">screenshot · awaiting upload</div>';
-                        parent.appendChild(fallback);
-                      }
-                    }}
-                  />
-                </div>
+                {/* 3. Product Screenshot - Dynamic Container Upload */}
+                <CaseStudyImageContainer 
+                  projectId={project.id}
+                  alt={`${project.title} Screenshot`}
+                />
 
                 {/* 4. Brief Description */}
                 <div className="min-h-[56px] sm:min-h-[72px] flex items-start mb-2">
@@ -237,32 +227,10 @@ const CaseStudies = React.memo(function CaseStudies() {
                         <ImageIcon className="w-3 h-3" />
                         <span>[PRODUCT_SCREENSHOT_VIEW]</span>
                       </div>
-                      <div className="w-full aspect-[4/3] relative rounded overflow-hidden border border-[#00ff66]/10 case-study-screenshot uploaded flex items-center justify-center">
-                        <img 
-                          src={CASE_STUDY_IMAGES[activeCase.id]} 
-                          alt="Product snapshot" 
-                          loading="lazy"
-                          decoding="async"
-                          className="object-contain rounded shadow border border-zinc-800 mx-auto w-full h-full" 
-                          style={{
-                            filter: 'none',
-                            mixBlendMode: 'normal',
-                            opacity: 1
-                          }}
-                          onError={(e) => {
-                            const target = e.currentTarget;
-                            target.style.display = 'none';
-                            const parent = target.parentElement;
-                            if (parent && !parent.querySelector('.img-fallback')) {
-                              const fallback = document.createElement('div');
-                              fallback.className = 'img-fallback';
-                              fallback.style.cssText = 'width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:#051105;color:rgba(0,255,102,0.3);font-family:monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;';
-                              fallback.innerHTML = '<div>[ NO_SIGNAL ]</div><div style="font-size:8px;opacity:0.5">screenshot · awaiting upload</div>';
-                              parent.appendChild(fallback);
-                            }
-                          }}
-                        />
-                      </div>
+                      <CaseStudyImageContainer 
+                        projectId={activeCase.id}
+                        alt="Product snapshot"
+                      />
                     </div>
 
                     {/* Skills/Directives matched */}

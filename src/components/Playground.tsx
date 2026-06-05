@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
+import { useImage } from '../hooks/useImage';
 import { useStickyOffset } from '../hooks/useStickyOffset';
 import AmbientDotMatrix from './AmbientDotMatrix';
+import OptimizedImage from './OptimizedImage';
 
 const Playground = React.memo(function Playground() {
   const { elementRef, stickyTop } = useStickyOffset();
   const [isVisible, setIsVisible] = useState(false);
-  const [imgError, setImgError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const profileCrt = useImage('portrait');
 
   useEffect(() => {
     const el = containerRef.current;
@@ -21,7 +23,7 @@ const Playground = React.memo(function Playground() {
         }
       },
       {
-        rootMargin: '250px 0px',
+        rootMargin: '250px 0px', // start loading early for unperceived transition
       }
     );
 
@@ -34,9 +36,7 @@ const Playground = React.memo(function Playground() {
       id="playground"
       ref={elementRef}
       style={{ 
-        top: stickyTop,
-        contain: 'paint layout',
-        willChange: 'transform'
+        top: stickyTop
       }}
       className="relative md:sticky z-[20] w-full min-h-screen flex flex-col justify-center py-16 md:py-24 bg-[#051105] border-t border-[#00ff66]/40 scroll-mt-20 overflow-hidden"
     >
@@ -93,7 +93,7 @@ const Playground = React.memo(function Playground() {
                   <div className="w-full max-w-md flex flex-col items-center gap-4">
                     {/* Outer retro shell monitor cabinet frame */}
                     <div 
-                      className="relative border border-[#00ff66]/40 bg-black p-4 rounded-xl shadow-[0_0_20px_rgba(0,255,102,0.18)] retro-border w-full select-none will-change-gpu"
+                      className="relative border border-[#00ff66]/40 bg-black p-4 rounded-xl shadow-[0_0_20px_rgba(0,255,102,0.18)] retro-border w-full select-none"
                     >
                       
                       {/* 4 Corner brackets overlay to reinforce terminal look */}
@@ -124,43 +124,26 @@ const Playground = React.memo(function Playground() {
                         </div>
 
                         {/* True Portrait Image Container */}
-                        <div className="relative w-full h-full flex items-center justify-center overflow-hidden z-10 mb-2 select-none">
-                          {imgError ? (
-                            /* Fallback: stylized placeholder when image is missing/corrupt */
-                            <div className="w-full h-full flex flex-col items-center justify-center gap-4 bg-[#010902]">
-                              {/* ASCII-art style avatar silhouette */}
-                              <div className="font-mono text-[#00ff66]/40 text-[10px] leading-[14px] select-none text-center">
-                                <div>{'  ████████  '}</div>
-                                <div>{'██        ██'}</div>
-                                <div>{'██  ◉  ◉  ██'}</div>
-                                <div>{'██    ▽    ██'}</div>
-                                <div>{'██  ╰──╯  ██'}</div>
-                                <div>{'  ████████  '}</div>
-                                <div>{'████████████'}</div>
-                                <div>{'██          ██'}</div>
-                              </div>
-                              <div className="font-mono text-[10px] text-[#00ff66]/50 uppercase tracking-widest text-center">
-                                <div>[ SIGNAL_PENDING ]</div>
-                                <div className="text-[9px] text-[#00ff66]/30 mt-1">portrait.png · awaiting upload</div>
-                              </div>
-                            </div>
-                          ) : (
-                            <img
-                              src="/src/assets/images/about-me/portrait.png"
-                              alt="Sarthak Bajaj Profile Portrait"
-                              className="w-full h-full object-cover opacity-85 brightness-[1.08] contrast-[1.25]"
-                              style={{
-                                filter: 'grayscale(100%) brightness(1.15) contrast(1.3) sepia(100%) hue-rotate(95deg) saturate(380%)',
-                              }}
-                              referrerPolicy="no-referrer"
-                              loading="lazy"
-                              decoding="async"
-                              onError={() => setImgError(true)}
-                            />
+                        <div 
+                          className="relative w-full h-full flex items-center justify-center overflow-hidden z-10 mb-2 cursor-default group border border-[#00ff66]/20 rounded transition-all duration-350 select-none bg-black/40 min-h-[220px]"
+                        >
+                          {profileCrt && (
+                            <>
+                              <OptimizedImage
+                                src={profileCrt}
+                                alt="Sarthak Bajaj Profile Portrait"
+                                className="w-full h-full object-cover opacity-85 brightness-[1.08] contrast-[1.25] transition-transform duration-500 group-hover:scale-[1.03]"
+                                style={{
+                                  filter: 'grayscale(100%) brightness(1.15) contrast(1.3) sepia(100%) hue-rotate(95deg) saturate(380%)',
+                                }}
+                                wrapperClassName="w-full h-full"
+                              />
+
+                              {/* Phosphor glaze overlay mix-blend layers */}
+                              <div className="absolute inset-0 bg-[#00ff66]/15 mix-blend-color-dodge pointer-events-none z-20"></div>
+                              <div className="absolute inset-0 bg-gradient-to-t from-[#00ff66]/10 to-transparent mix-blend-overlay pointer-events-none z-20"></div>
+                            </>
                           )}
-                          {/* Phosphor glaze overlay mix-blend layers */}
-                          <div className="absolute inset-0 bg-[#00ff66]/15 mix-blend-color-dodge pointer-events-none z-20"></div>
-                          <div className="absolute inset-0 bg-gradient-to-t from-[#00ff66]/10 to-transparent mix-blend-overlay pointer-events-none z-20"></div>
                         </div>
 
                         {/* Animated Equalizer Visualizer along bottom — pure CSS, zero JS layout cost */}

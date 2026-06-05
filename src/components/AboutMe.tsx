@@ -57,9 +57,7 @@ const AboutMe = React.memo(function AboutMe() {
       id="about"
       ref={elementRef}
       style={{ 
-        top: stickyTop,
-        contain: 'paint layout',
-        willChange: 'transform'
+        top: stickyTop
       }}
       className="relative md:sticky z-[30] w-full min-h-screen flex flex-col justify-center py-16 md:py-24 bg-[#051105] border-t border-[#00ff66]/40 scroll-mt-20 overflow-hidden"
     >
@@ -99,7 +97,7 @@ const AboutMe = React.memo(function AboutMe() {
 
                 {/* Right Column: Unified Terminal Container with 2x2 Grid */}
                 <div className="lg:col-span-7">
-                  <div className="border border-[#00ff66]/40 bg-[#051105]/85 rounded p-4 sm:p-6 relative retro-border will-change-gpu">
+                  <div className="border border-[#00ff66]/40 bg-[#051105]/85 rounded p-4 sm:p-6 relative retro-border">
                     {/* Scanline background decorative element */}
                     <div className="absolute inset-0 bg-gradient-to-b from-[#00ff66]/2 to-transparent pointer-events-none opacity-40"></div>
 
@@ -108,7 +106,7 @@ const AboutMe = React.memo(function AboutMe() {
                       {COMPANIES.map((company) => (
                         <div
                           key={company.id}
-                          className="border border-[#00ff66]/25 bg-black/60 p-5 rounded hover:border-[#00ff66]/60 hover-card-flicker transition-all duration-300 relative group flex flex-col justify-center overflow-hidden cursor-pointer active:scale-98 will-change-gpu"
+                          className="border border-[#00ff66]/25 bg-black/60 p-5 rounded hover:border-[#00ff66]/60 hover-card-flicker transition-all duration-300 relative group flex flex-col justify-center overflow-hidden cursor-pointer active:scale-98"
                           style={{ minHeight: '100px' }}
                         >
                           {/* Company Information */}

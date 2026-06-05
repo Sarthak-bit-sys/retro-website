@@ -2,25 +2,29 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { useStickyOffset } from '../hooks/useStickyOffset';
 import AmbientDotMatrix from './AmbientDotMatrix';
+import OptimizedImage from './OptimizedImage';
 
-// Import static images for Hobbies section
-// @ts-expect-error - Vite resolves PNG imports automatically
-import hobby01 from '../assets/images/hobbies/hobby-01.png';
-// @ts-expect-error - Vite resolves PNG imports automatically
-import hobby02 from '../assets/images/hobbies/hobby-02.png';
-// @ts-expect-error - Vite resolves PNG imports automatically
-import hobby03 from '../assets/images/hobbies/hobby-03.png';
-// @ts-expect-error - Vite resolves PNG imports automatically
-import hobby04 from '../assets/images/hobbies/hobby-04.png';
-// @ts-expect-error - Vite resolves PNG imports automatically
-import hobby05 from '../assets/images/hobbies/hobby-05.png';
+import { useImage } from '../hooks/useImage';
 
-const HOBBY_IMAGES: Record<string, string> = {
-  'frame-01': hobby01,
-  'frame-02': hobby02,
-  'frame-03': hobby03,
-  'frame-04': hobby04,
-  'frame-05': hobby05
+const HobbyFrameImageContainer: React.FC<{ frame: FrameConfig }> = ({ frame }) => {
+  const hobbyKey = frame.id.replace('frame-', 'hobby-');
+  const photoUrl = useImage(hobbyKey);
+
+  return (
+    <div 
+      className="relative w-full h-full z-20 overflow-hidden cursor-default select-none bg-black flex items-center justify-center transition-all duration-300"
+    >
+      {photoUrl && (
+        <OptimizedImage
+          src={photoUrl}
+          alt={frame.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover/photo:scale-[1.02] pointer-events-none select-none"
+          style={{ filter: 'none', mixBlendMode: 'normal', imageRendering: 'auto' }}
+          wrapperClassName="w-full h-full"
+        />
+      )}
+    </div>
+  );
 };
 
 interface FrameConfig {
@@ -100,49 +104,11 @@ const HobbiesInterests = React.memo(function HobbiesInterests() {
     return () => observer.disconnect();
   }, []);
 
-  // Render static high-quality photo with filters bypassed and absolutely no upload overlays
+  // Render static high-quality photo with filters bypassed and static image viewer
   const renderPhotoContent = (frame: FrameConfig) => {
-    const photoUrl = HOBBY_IMAGES[frame.id];
-
     return (
       <div className="relative w-full h-full z-20 overflow-hidden">
-        <img
-          src={photoUrl}
-          alt={frame.title}
-          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105 pointer-events-none select-none"
-          style={{ filter: 'none', mixBlendMode: 'normal', opacity: 1, imageRendering: 'auto' }}
-          referrerPolicy="no-referrer"
-          loading="lazy"
-          decoding="async"
-          onError={(e) => {
-            const target = e.currentTarget;
-            target.style.display = 'none';
-            const parent = target.parentElement;
-            if (parent && !parent.querySelector('.img-fallback')) {
-              const fallback = document.createElement('div');
-              fallback.className = 'img-fallback';
-              fallback.style.cssText = [
-                'width:100%',
-                'height:100%',
-                'min-height:120px',
-                'display:flex',
-                'flex-direction:column',
-                'align-items:center',
-                'justify-content:center',
-                'gap:8px',
-                'background:#051105',
-                'color:rgba(0,255,102,0.3)',
-                'font-family:monospace',
-                'font-size:10px',
-                'letter-spacing:2px',
-                'text-transform:uppercase',
-                'padding:16px',
-              ].join(';');
-              fallback.innerHTML = `<div style="font-size:20px;opacity:0.4">📷</div><div>[ NO SIGNAL ]</div><div style="font-size:8px;opacity:0.4;margin-top:2px">${frame.title.replace('// ', '')}</div>`;
-              parent.appendChild(fallback);
-            }
-          }}
-        />
+        <HobbyFrameImageContainer frame={frame} />
       </div>
     );
   };
@@ -229,9 +195,7 @@ const HobbiesInterests = React.memo(function HobbiesInterests() {
       id="hobbies"
       ref={elementRef}
       style={{ 
-        top: stickyTop,
-        contain: 'paint layout',
-        willChange: 'transform'
+        top: stickyTop
       }}
       className="relative md:sticky z-[50] w-full min-h-screen flex flex-col justify-center py-16 md:py-24 bg-[#051105] border-t border-[#00ff66]/40 scroll-mt-20 overflow-hidden text-left"
     >
@@ -294,6 +258,7 @@ const HobbiesInterests = React.memo(function HobbiesInterests() {
                 {/* Meta Layout Header Inside Cards */}
                 <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#00ff66]/10 text-[10px] font-mono select-none">
                   <span className="text-[#00ff66]/40 uppercase tracking-widest">[ SLOT_0{idx+1} ]</span>
+
                   <span className="text-[#00ff66]/65 font-bold uppercase tracking-wider">
                     {frame.shape}
                   </span>
